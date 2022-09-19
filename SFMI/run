@@ -1,0 +1,59 @@
+#~/bin/sh
+
+
+JAVA_HOME=/home/openmcm/SAPJVM/sapjvm_8
+MCM_HOME=/home/openmcm/wasagent_jdk8
+
+
+
+GC_LOG_HOME=/home/openmcm/wasagent_jdk8/log
+GC_LOG_NAME=test_gc.log
+MCM_VM_ID=Test
+MCM_HOSTNAME=Linux155
+
+
+MCM_OPTION=" -javaagent:${MCM_HOME}/lib/MCMAdapterJavaagent.jar"
+MCM_OPTION="${MCM_OPTION} -Xbootclasspath/p:${MCM_HOME}/lib/MCMAdapterRT_8_1_076.jar"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.mcmHome=${MCM_HOME}"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.vmId=${MCM_VM_ID}"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.properties=${MCM_HOME}/config/mcmAdapter_${MCM_VM_ID}.properties"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.sysCode=2"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.prodCode=22"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.gcLogPath=${GC_LOG_PATH}"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.gcLogName=${GC_LOG_NAME}"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.domain=test"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.SYSInfoLoaded=true"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.MSLLoaded=true"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.bypassCachePath=${MCM_HOME}/cache"
+MCM_OPTION="${MCM_OPTION} -Dcsun.boot.library.path=${JAVA_HOME}jre/bin:${MCM_HOME}/lib"
+MCM_OPTION="${MCM_OPTION} -Dcom.hp.mcm.adapter.MCMExec=JEUS"
+
+export MCM_CONFIG_FILE=${MCM_HOME}/config/mcmAdapter_${MCM_VM_ID}.properties
+export LD_PRELOAD=${MCM_HOME}/lib/libMcmMSL6tje.so
+
+case $1 in
+cc)
+${JAVA_HOME}/bin/javac TimeClient.java
+${JAVA_HOME}/bin/javac TimeServer.java
+${JAVA_HOME}/bin/javac Client.java
+${JAVA_HOME}/bin/javac Server.java
+;;
+svr)
+${JAVA_HOME}/bin/java ${MCM_OPTION} TimeServer 9899
+;;
+
+cli)
+${JAVA_HOME}/bin/java ${MCM_OPTION} TimeClient 127.0.0.1 9899
+;;
+svr1)
+${JAVA_HOME}/bin/java ${MCM_OPTION} Server 
+;;
+
+cli1)
+${JAVA_HOME}/bin/java ${MCM_OPTION} Client 
+;;
+
+*)
+	echo "$0 svr|cli"
+;;
+esac
